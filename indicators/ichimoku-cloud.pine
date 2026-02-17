@@ -1,7 +1,7 @@
 //@version=5
 // Author: Akash Sasikumar
 // Copyright: 2023.Akash sasikumar
-//@version=5
+
 indicator(title="Ichimoku Cloud", shorttitle="Ichimoku", overlay=true)
 conversionPeriods = input.int(9, minval=1, title="Conversion Line Length")
 basePeriods = input.int(26, minval=1, title="Base Line Length")

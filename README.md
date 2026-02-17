@@ -1,102 +1,105 @@
-<div>
-  <h1>📉 Advanced Level Indicators</h1>
-  <p>Welcome to the Advanced Stock Market Technical Indicators Repository! In the world of stock trading and investment, having the right tools at your disposal is crucial for making informed decisions. Technical indicators play a pivotal role in analyzing price movements, identifying trends, and predicting potential market reversals. This repository aims to provide a comprehensive collection of advanced technical indicators that can empower traders and investors with valuable insights into the stock market.</p>
-</div>
+# Pine Strategy Indicators v3
 
-## 📈 Indicators Included
+## Overview
 
-This repository includes the following advanced technical indicators:
+A collection of professional-grade Pine Script indicators for TradingView, designed for technical analysis and trend identification. This repository includes five advanced indicators covering trend detection, volume analysis, support/resistance levels, and momentum measurement.
 
-- 🌤️ **Ichimoku Cloud**
-- 🔢 **Fibonacci Retracement**
-- 🛑 **Parabolic SAR (Stop and Reverse)**
-- 🔄 **Aroon Oscillator**
-- 💹 **On-Balance Volume (OBV)**
-
-## 📋 Indicator Descriptions
-
-### Ichimoku Cloud
-![Ichimoku Cloud Example](images/ichimoku-cloud.png)
-
-The Ichimoku Cloud is a comprehensive technical indicator that provides a visual representation of support, resistance, and trend strength. It consists of multiple components, including the Kijun-sen, Tenkan-sen, Senkou Span A and B, and the Chikou Span. The cloud's unique appearance on a TradingView chart can help traders assess potential market trends and reversals.
-
-**Use Case:**
-The Ichimoku Cloud helps traders identify the direction of a trend and assess its strength. It also provides potential support and resistance levels.
-
-**How to Use:**
-To use the Ichimoku Cloud indicator, follow these steps:
-1. Understand the components of the Ichimoku Cloud, including the cloud itself, Tenkan-sen, Kijun-sen, Senkou Span A and B, and Chikou Span.
-2. Observe the cloud's color and thickness. A bullish trend is indicated by a green cloud, while a bearish trend is indicated by a red cloud.
-3. Use the positioning of price relative to the cloud, Tenkan-sen, and Kijun-sen to make trading decisions.
-4. Look for potential support and resistance levels within the cloud.
-
-### Fibonacci Retracement
-![Fibonacci Retracement Example](images/Fib-Retracement.png)
-
-Fibonacci Retracement is a powerful tool for identifying potential support and resistance levels based on key Fibonacci ratios, such as 23.6%, 38.2%, 50%, 61.8%, and 100%. These levels can act as price reversal points, helping traders make decisions on entry and exit points.
-
-**Use Case:**
-Fibonacci Retracement helps traders identify key levels where price may reverse or consolidate.
-
-**How to Use:**
-To use the Fibonacci Retracement indicator, follow these steps:
-1. Identify a significant price swing (high to low or low to high) that you want to analyze.
-2. Draw the Fibonacci retracement levels from the start to the end of the price swing.
-3. Observe how price interacts with the Fibonacci levels. These levels can act as potential entry, exit, or stop-loss points.
-4. Combine Fibonacci Retracement with other technical indicators for confirmation.
-
-### Parabolic SAR (Stop and Reverse)
-![Parabolic SAR Example](images/Parabolic-SAR.png)
-
-The Parabolic SAR is used to highlight potential trend reversals in price movements. It appears as a series of dots above or below the price chart, indicating potential entry and exit points based on the direction of the dots.
-
-**Use Case:**
-Parabolic SAR helps traders identify potential points where a trend may reverse.
-
-**How to Use:**
-To use the Parabolic SAR indicator, follow these steps:
-1. Observe the position of Parabolic SAR dots relative to the price chart.
-2. Dots above the price suggest a bearish trend, while dots below the price suggest a bullish trend.
-3. When dots switch sides, it may signal a potential trend reversal.
-4. Use Parabolic SAR in combination with other indicators to confirm reversal signals.
+## Included Indicators
 
 ### Aroon Oscillator
-![Aroon Oscillator Example](images/Aroon-Oscillator.png)
 
-The Aroon Oscillator is designed to determine the strength of a trend and identify potential trend reversals. It consists of two lines, Aroon Up and Aroon Down, which oscillate between 0 and 100. Traders can use these lines to gauge trend strength and potential shifts in market direction.
+**Purpose:** Measures trend strength and identifies potential trend reversals by calculating the time elapsed since recent highs and lows.
 
-**Use Case:**
-Aroon Oscillator helps traders assess the strength of a trend and potential trend reversals.
+**Core Logic:** Computes the difference between Aroon Up (periods since highest high) and Aroon Down (periods since lowest low), oscillating between -100 and +100. Values above +80 indicate strong uptrend, while values below -80 suggest strong downtrend.
 
-**How to Use:**
-To use the Aroon Oscillator indicator, follow these steps:
-1. Calculate the Aroon Up and Aroon Down lines based on a specified period (e.g., 14).
-2. Aroon Up measures the strength of the bullish trend, while Aroon Down measures the strength of the bearish trend.
-3. Pay attention to crossovers and extreme readings to identify potential trend reversals.
-4. Use Aroon Oscillator in conjunction with other indicators for confirmation.
+**Key Parameters:**
+- Length: Lookback period for highest/lowest calculations (default: 14)
+
+![Aroon Oscillator](images/Aroon-Oscillator.png)
+
+**Typical Use Case:** Identify emerging trends and potential reversal points. Crossovers above zero signal bullish momentum, while crossovers below zero indicate bearish momentum. Use alongside price action to confirm trend changes.
+
+---
+
+### Fibonacci Retracement
+
+**Purpose:** Automatically identifies potential support and resistance levels based on Fibonacci ratios using pivot points detected via ZigZag algorithm.
+
+**Core Logic:** Detects significant price swings using pivot detection, then plots Fibonacci retracement levels (0, 0.236, 0.382, 0.5, 0.618, 0.786, 1, 1.618, 2.618, 3.618, 4.236) with customizable colors and extension options.
+
+**Key Parameters:**
+- Deviation: Multiplier affecting pivot sensitivity (default: 3)
+- Depth: Minimum bars for pivot calculation (default: 10)
+- Reverse: Toggle direction of Fibonacci levels
+- Extend Left/Right: Line extension options
+- Show Prices/Levels: Display toggles for labels
+
+![Fibonacci Retracement](images/Fib-Retracement.png)
+
+**Typical Use Case:** Identify potential price reversal zones during retracements in trending markets. Common entry points at 0.382, 0.5, and 0.618 levels. Extension levels (1.618, 2.618) useful for profit targets.
+
+---
+
+### Ichimoku Cloud
+
+**Purpose:** Comprehensive trend indicator that displays support/resistance zones, momentum, and trend direction through multiple components.
+
+**Core Logic:** Calculates five lines based on period averages: Conversion Line (short-term momentum), Base Line (medium-term momentum), Leading Span A & B (forming the cloud for support/resistance), and Lagging Span (confirmation). Cloud color indicates trend direction.
+
+**Key Parameters:**
+- Conversion Line Length: Fast period (default: 9)
+- Base Line Length: Medium period (default: 26)
+- Leading Span B Length: Slow period (default: 52)
+- Lagging Span: Displacement offset (default: 26)
+
+![Ichimoku Cloud](images/ichimoku-cloud.png)
+
+**Typical Use Case:** Determine overall trend direction and strength. Price above cloud indicates uptrend; below cloud indicates downtrend. Use cloud as dynamic support/resistance zone. Conversion/Base line crosses signal potential entries.
+
+---
 
 ### On-Balance Volume (OBV)
-![On-Balance Volume (OBV) Example](images/On-Balance-Volume.png)
 
-The On-Balance Volume (OBV) indicator relates volume to price movements, helping traders identify buying and selling pressure. A rising OBV suggests accumulation, while a falling OBV indicates distribution.
+**Purpose:** Volume-based momentum indicator that tracks cumulative buying and selling pressure by relating volume to price movement.
 
-**Use Case:**
-OBV helps traders confirm the strength of a trend by analyzing volume and price movements.
+**Core Logic:** Adds volume on up-close days and subtracts volume on down-close days to create a cumulative line. Rising OBV confirms uptrend strength; falling OBV confirms downtrend. Includes optional smoothing with multiple moving average types.
 
-**How to Use:**
-To use the On-Balance Volume (OBV) indicator, follow these steps:
-1. Calculate the OBV by adding volume on up days and subtracting volume on down days.
-2. Observe the OBV line on the price chart.
-3. Rising OBV suggests buying pressure and a strengthening trend, while falling OBV suggests selling pressure and a weakening trend.
-4. Use OBV to confirm price trend directions and potential trend reversals.
+**Key Parameters:**
+- Smoothing Method: SMA, EMA, SMMA (RMA), WMA, or VWMA (default: SMA)
+- Smoothing Length: Period for smoothing calculation (default: 5)
 
-## 🚀 Usage and Instructions
+![On-Balance Volume](images/On-Balance-Volume.png)
 
-To use these indicators:
-1. Open the TradingView Pine Script editor.
-2. Copy the Pine Script code of the desired indicator from this repository.
-3. Paste the code in the Pine Script editor.
-4. Customize the indicator's parameters as needed.
-5. Apply the indicator to your chart to visualize its signals.
+**Typical Use Case:** Confirm trend strength and detect divergences. If price makes new highs but OBV doesn't, it signals weakening momentum (bearish divergence). Use OBV trend direction to validate price trends.
 
-Feel free to explore, modify, and integrate these indicators into your trading strategies. Happy trading!
+---
+
+### Parabolic SAR
+
+**Purpose:** Trend-following indicator that provides dynamic stop-loss levels and identifies potential trend reversal points.
+
+**Core Logic:** Plots dots above or below price that follow the trend direction. Dots flip to opposite side when trend reverses. Acceleration Factor (AF) increases as trend continues, making SAR more sensitive over time.
+
+**Key Parameters:**
+- AF Start: Initial acceleration factor (default: 0.02)
+- AF Increment: AF increase per period (default: 0.02)
+- AF Max: Maximum acceleration factor (default: 0.20)
+
+![Parabolic SAR](images/Parabolic-SAR.png)
+
+**Typical Use Case:** Identify trailing stop-loss levels and trend changes. When dots switch from below to above price, consider closing longs. When dots switch from above to below, consider closing shorts or entering longs.
+
+---
+
+## How to Use
+
+1. Open TradingView and navigate to the Pine Editor
+2. Copy the Pine Script code from the desired indicator file in the `indicators/` folder
+3. Paste the code into the Pine Editor
+4. Click "Save" and then "Add to Chart"
+5. Customize indicator parameters through the settings menu as needed
+6. Combine multiple indicators for comprehensive analysis and confirmation
+
+## Disclaimer
+
+These indicators are provided for educational and informational purposes only. They should not be construed as financial advice or trading recommendations. Always conduct your own research and consider consulting with a qualified financial advisor before making trading decisions. Past performance does not guarantee future results.
