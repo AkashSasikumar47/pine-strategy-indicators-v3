@@ -1,0 +1,173 @@
+//@version=6
+indicator("Fibonacci Retracement", "FIB", overlay = true)
+
+import TradingView/ZigZag/8 as zigzag
+
+deviationTooltip = "Deviation is a multiplier that affects how much the price should deviate from the previous pivot in order for the bar to become a new pivot."
+depthTooltip = "The minimum number of bars that will be taken into account when calculating the indicator."
+
+deviationMultiplier = input.float(3.0, "Deviation", minval = 0, tooltip = deviationTooltip)
+depth = input.int(10, "Depth", minval = 2, tooltip = depthTooltip)
+reverse = input.bool(false, "Reverse")
+extendLeft = input.bool(false, "Extend Left    |    Extend Right", inline = "Extend Lines")
+extendRight = input.bool(true, "", inline = "Extend Lines")
+showPrices = input.bool(true, "Show Prices")
+showLevels = input.bool(true, "Show Levels", inline = "Levels")
+levelsFormat = input.string("Values", "", options = ["Values", "Percent"], inline = "Levels")
+labelsPosition = input.string("Left", "Labels Position", options = ["Left", "Right"])
+backgroundTransparency = input.int(85, "Background Transparency", minval = 0, maxval = 100)
+
+show0 = input.bool(true, "", inline = "Level0")
+value0 = input.float(0.0, "", inline = "Level0")
+color0 = input.color(#787b86, "", inline = "Level0")
+show0236 = input.bool(true, "", inline = "Level0")
+value0236 = input.float(0.236, "", inline = "Level0")
+color0236 = input.color(#f44336, "", inline = "Level0")
+show0382 = input.bool(true, "", inline = "Level1")
+value0382 = input.float(0.382, "", inline = "Level1")
+color0382 = input.color(#81c784, "", inline = "Level1")
+show05 = input.bool(true, "", inline = "Level1")
+value05 = input.float(0.5, "", inline = "Level1")
+color05 = input.color(#4caf50, "", inline = "Level1")
+show0618 = input.bool(true, "", inline = "Level2")
+value0618 = input.float(0.618, "", inline = "Level2")
+color0618 = input.color(#009688, "", inline = "Level2")
+show065 = input.bool(false, "", inline = "Level2")
+value065 = input.float(0.65, "", inline = "Level2")
+color065 = input.color(#009688, "", inline = "Level2")
+show0786 = input.bool(true, "", inline = "Level3")
+value0786 = input.float(0.786, "", inline = "Level3")
+color0786 = input.color(#64b5f6, "", inline = "Level3")
+show1 = input.bool(true, "", inline = "Level3")
+value1 = input.float(1.0, "", inline = "Level3")
+color1 = input.color(#787b86, "", inline = "Level3")
+show1272 = input.bool(false, "", inline = "Level4")
+value1272 = input.float(1.272, "", inline = "Level4")
+color1272 = input.color(#81c784, "", inline = "Level4")
+show1414 = input.bool(false, "", inline = "Level4")
+value1414 = input.float(1.414, "", inline = "Level4")
+color1414 = input.color(#f44336, "", inline = "Level4")
+show1618 = input.bool(true, "", inline = "Level5")
+value1618 = input.float(1.618, "", inline = "Level5")
+color1618 = input.color(#2962ff, "", inline = "Level5")
+show165 = input.bool(false, "", inline = "Level5")
+value165 = input.float(1.65, "", inline = "Level5")
+color165 = input.color(#2962ff, "", inline = "Level5")
+show2618 = input.bool(true, "", inline = "Level6")
+value2618 = input.float(2.618, "", inline = "Level6")
+color2618 = input.color(#f44336, "", inline = "Level6")
+show265 = input.bool(false, "", inline = "Level6")
+value265 = input.float(2.65, "", inline = "Level6")
+color265 = input.color(#f44336, "", inline = "Level6")
+show3618 = input.bool(true, "", inline = "Level7")
+value3618 = input.float(3.618, "", inline = "Level7")
+color3618 = input.color(#9c27b0, "", inline = "Level7")
+show365 = input.bool(false, "", inline = "Level7")
+value365 = input.float(3.65, "", inline = "Level7")
+color365 = input.color(#9c27b0, "", inline = "Level7")
+show4236 = input.bool(true, "", inline = "Level8")
+value4236 = input.float(4.236, "", inline = "Level8")
+color4236 = input.color(#e91e63, "", inline = "Level8")
+show4618 = input.bool(false, "", inline = "Level8")
+value4618 = input.float(4.618, "", inline = "Level8")
+color4618 = input.color(#81c784, "", inline = "Level8")
+showNeg0236 = input.bool(false, "", inline = "Level9")
+valueNeg0236 = input.float(-0.236, "", inline = "Level9")
+colorNeg0236 = input.color(#f44336, "", inline = "Level9")
+showNeg0382 = input.bool(false, "", inline = "Level9")
+valueNeg0382 = input.float(-0.382, "", inline = "Level9")
+colorNeg0382 = input.color(#81c784, "", inline = "Level9")
+showNeg0618 = input.bool(false, "", inline = "Level10")
+valueNeg0618 = input.float(-0.618, "", inline = "Level10")
+colorNeg0618 = input.color(#009688, "", inline = "Level10")
+showNeg065 = input.bool(false, "", inline = "Level10")
+valueNeg065 = input.float(-0.65, "", inline = "Level10")
+colorNeg065 = input.color(#009688, "", inline = "Level10")
+
+extending = extendLeft and extendRight ? extend.both : extendLeft ? extend.left : extendRight ? extend.right : extend.none
+labelPadding = '\n ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏  ‏ \n'
+
+update() =>
+    var settings = zigzag.Settings.new(deviationMultiplier, depth, color(na), false, false, false, false, "Absolute", true)
+    var zigzag.ZigZag zigZag = zigzag.newInstance(settings)
+    var zigzag.Pivot lastPivot = na
+    var float startPrice = na
+    var float height = na
+    settings.devThreshold := ta.atr(10) / close * 100 * deviationMultiplier
+    if zigZag.update()
+        lastPivot := zigZag.lastPivot()
+        if not na(lastPivot)
+            var line lastLine = na
+            if na(lastLine)
+                lastLine := line.new(lastPivot.start.time, lastPivot.start.price, lastPivot.end.time, lastPivot.end.price, xloc = xloc.bar_time, color = color.gray, width = 1, style = line.style_dashed)
+            else
+                line.set_xy1(lastLine, lastPivot.start.time, lastPivot.start.price)
+                line.set_xy2(lastLine, lastPivot.end.time, lastPivot.end.price)
+            startPrice := reverse ? lastPivot.start.price : lastPivot.end.price
+            endPrice = reverse ? lastPivot.end.price : lastPivot.start.price
+            height := (startPrice > endPrice ? -1 : 1) * math.abs(startPrice - endPrice)
+    [lastPivot, startPrice, height]
+
+[lastPivot, startPrice, height] = update()
+
+drawLine(price, lineColor) =>
+    var id = line.new(lastPivot.start.time, lastPivot.start.price, time, price, xloc = xloc.bar_time, color = lineColor, width = 1, extend = extending)
+    line.set_xy1(id, lastPivot.start.time, price)
+    line.set_xy2(id, lastPivot.end.time, price)
+    id
+
+drawLabel(price, labelText, textColor) =>
+    onLeft = labelsPosition == "Left"
+    x = onLeft ? lastPivot.start.time : not extendRight ? lastPivot.end.time : time
+    labelStyle = onLeft ? label.style_label_right : label.style_label_left
+    align = onLeft ? text.align_right : text.align_left
+    content = (onLeft ? "" : '       ') + labelText + labelPadding
+    var id = label.new(x = x, y = price, xloc = xloc.bar_time, text = content, textcolor = textColor, style = labelStyle, textalign = align, color = #00000000)
+    label.set_xy(id, x, price)
+    label.set_text(id, content)
+    label.set_textcolor(id, textColor)
+
+levelText(level, price) =>
+    value = levelsFormat == "Values" ? str.tostring(level) : str.tostring(level * 100) + "%"
+    (showLevels ? value : "") + (showPrices ? "(" + str.tostring(price, format.mintick) + ")" : "")
+
+crossedLevel(source, level) =>
+    (level > source and level < source[1]) or (level < source and level > source[1])
+
+processLevel(show, value, levelColor, previousLine) =>
+    level = startPrice + height * value
+    crossed = crossedLevel(close, level)
+    if show and not na(lastPivot)
+        lineId = drawLine(level, levelColor)
+        drawLabel(level, levelText(value, level), levelColor)
+        if crossed
+            alert("Autofib: " + syminfo.ticker + " crossing level " + str.tostring(value))
+        if not na(previousLine)
+            linefill.new(lineId, previousLine, color.new(levelColor, backgroundTransparency))
+        lineId
+    else
+        previousLine
+
+previousLine = line(na)
+previousLine := processLevel(showNeg065, valueNeg065, colorNeg065, previousLine)
+previousLine := processLevel(showNeg0618, valueNeg0618, colorNeg0618, previousLine)
+previousLine := processLevel(showNeg0382, valueNeg0382, colorNeg0382, previousLine)
+previousLine := processLevel(showNeg0236, valueNeg0236, colorNeg0236, previousLine)
+previousLine := processLevel(show0, value0, color0, previousLine)
+previousLine := processLevel(show0236, value0236, color0236, previousLine)
+previousLine := processLevel(show0382, value0382, color0382, previousLine)
+previousLine := processLevel(show05, value05, color05, previousLine)
+previousLine := processLevel(show0618, value0618, color0618, previousLine)
+previousLine := processLevel(show065, value065, color065, previousLine)
+previousLine := processLevel(show0786, value0786, color0786, previousLine)
+previousLine := processLevel(show1, value1, color1, previousLine)
+previousLine := processLevel(show1272, value1272, color1272, previousLine)
+previousLine := processLevel(show1414, value1414, color1414, previousLine)
+previousLine := processLevel(show1618, value1618, color1618, previousLine)
+previousLine := processLevel(show165, value165, color165, previousLine)
+previousLine := processLevel(show2618, value2618, color2618, previousLine)
+previousLine := processLevel(show265, value265, color265, previousLine)
+previousLine := processLevel(show3618, value3618, color3618, previousLine)
+previousLine := processLevel(show365, value365, color365, previousLine)
+previousLine := processLevel(show4236, value4236, color4236, previousLine)
+previousLine := processLevel(show4618, value4618, color4618, previousLine)

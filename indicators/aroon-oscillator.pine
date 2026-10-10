@@ -1,0 +1,12 @@
+//@version=6
+indicator("Aroon Oscillator", "AROON", overlay = false)
+
+length = input.int(14, "Length", minval = 1)
+
+upper = 100 * (ta.highestbars(high, length + 1) + length) / length
+lower = 100 * (ta.lowestbars(low, length + 1) + length) / length
+
+plot(upper - lower, "Aroon Oscillator", color.rgb(144, 0, 255))
+hline(0, "Midline", color.gray)
+hline(80, "Overbought", color.green)
+hline(-80, "Oversold", color.red)
