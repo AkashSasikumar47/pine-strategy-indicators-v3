@@ -1,105 +1,98 @@
 # Pine Strategy Indicators v3
 
-## Overview
+Five open-source TradingView indicators written in Pine Script v6: Aroon Oscillator, Fibonacci Retracement, Ichimoku Cloud, On-Balance Volume and Parabolic SAR. Part of [GAINZ](https://gainz-trading-indicators.vercel.app), 35 indicators across seven collections.
 
-A collection of professional-grade Pine Script indicators for TradingView, designed for technical analysis and trend identification. This repository includes five advanced indicators covering trend detection, volume analysis, support/resistance levels, and momentum measurement.
+| Indicator                                       | Type   | Script                                                                |
+| ----------------------------------------------- | ------ | --------------------------------------------------------------------- |
+| [Aroon Oscillator](#aroon-oscillator)           | Trend  | [`aroon-oscillator.pine`](indicators/aroon-oscillator.pine)           |
+| [Fibonacci Retracement](#fibonacci-retracement) | Levels | [`fibonacci-retracement.pine`](indicators/fibonacci-retracement.pine) |
+| [Ichimoku Cloud](#ichimoku-cloud)               | Trend  | [`ichimoku-cloud.pine`](indicators/ichimoku-cloud.pine)               |
+| [On-Balance Volume](#on-balance-volume)         | Volume | [`on-balance-volume.pine`](indicators/on-balance-volume.pine)         |
+| [Parabolic SAR](#parabolic-sar)                 | Trend  | [`parabolic-sar.pine`](indicators/parabolic-sar.pine)                 |
 
-## Included Indicators
+## Aroon Oscillator
 
-### Aroon Oscillator
+![Aroon Oscillator](images/aroon-oscillator.png)
 
-**Purpose:** Measures trend strength and identifies potential trend reversals by calculating the time elapsed since recent highs and lows.
+Tracks how recently price made its highest high and its lowest low, then subtracts one from the other.
 
-**Core Logic:** Computes the difference between Aroon Up (periods since highest high) and Aroon Down (periods since lowest low), oscillating between -100 and +100. Values above +80 indicate strong uptrend, while values below -80 suggest strong downtrend.
+Above zero, recent highs dominate and the trend leans up. Below zero, lows dominate. A cross through zero is a change of hands.
 
-**Key Parameters:**
-- Length: Lookback period for highest/lowest calculations (default: 14)
+| Setting | Default |
+| ------- | ------- |
+| Length  | 14      |
 
-![Aroon Oscillator](images/Aroon-Oscillator.png)
+## Fibonacci Retracement
 
-**Typical Use Case:** Identify emerging trends and potential reversal points. Crossovers above zero signal bullish momentum, while crossovers below zero indicate bearish momentum. Use alongside price action to confirm trend changes.
+![Fibonacci Retracement](images/fibonacci-retracement.png)
 
----
+Finds the last major swing on its own and draws the classic Fibonacci levels across it, with prices on every line.
 
-### Fibonacci Retracement
+Watch 38.2%, 50% and 61.8% for pullbacks to stall. Deviation and depth decide how big a swing has to be to count.
 
-**Purpose:** Automatically identifies potential support and resistance levels based on Fibonacci ratios using pivot points detected via ZigZag algorithm.
+| Setting   | Default |
+| --------- | ------- |
+| Deviation | 3       |
+| Depth     | 10      |
+| Extend    | Right   |
 
-**Core Logic:** Detects significant price swings using pivot detection, then plots Fibonacci retracement levels (0, 0.236, 0.382, 0.5, 0.618, 0.786, 1, 1.618, 2.618, 3.618, 4.236) with customizable colors and extension options.
+Based on TradingView's built-in Auto Fib Retracement indicator.
 
-**Key Parameters:**
-- Deviation: Multiplier affecting pivot sensitivity (default: 3)
-- Depth: Minimum bars for pivot calculation (default: 10)
-- Reverse: Toggle direction of Fibonacci levels
-- Extend Left/Right: Line extension options
-- Show Prices/Levels: Display toggles for labels
-
-![Fibonacci Retracement](images/Fib-Retracement.png)
-
-**Typical Use Case:** Identify potential price reversal zones during retracements in trending markets. Common entry points at 0.382, 0.5, and 0.618 levels. Extension levels (1.618, 2.618) useful for profit targets.
-
----
-
-### Ichimoku Cloud
-
-**Purpose:** Comprehensive trend indicator that displays support/resistance zones, momentum, and trend direction through multiple components.
-
-**Core Logic:** Calculates five lines based on period averages: Conversion Line (short-term momentum), Base Line (medium-term momentum), Leading Span A & B (forming the cloud for support/resistance), and Lagging Span (confirmation). Cloud color indicates trend direction.
-
-**Key Parameters:**
-- Conversion Line Length: Fast period (default: 9)
-- Base Line Length: Medium period (default: 26)
-- Leading Span B Length: Slow period (default: 52)
-- Lagging Span: Displacement offset (default: 26)
+## Ichimoku Cloud
 
 ![Ichimoku Cloud](images/ichimoku-cloud.png)
 
-**Typical Use Case:** Determine overall trend direction and strength. Price above cloud indicates uptrend; below cloud indicates downtrend. Use cloud as dynamic support/resistance zone. Conversion/Base line crosses signal potential entries.
+Five lines that show trend, momentum, support and resistance in a single view, with a cloud projected ahead of price.
 
----
+Above a green cloud is bullish, below a red one bearish, inside it undecided. The cloud's edges act as support and resistance.
 
-### On-Balance Volume (OBV)
+| Setting    | Default |
+| ---------- | ------- |
+| Conversion | 9       |
+| Base       | 26      |
+| Span B     | 52      |
+| Lagging    | 26      |
 
-**Purpose:** Volume-based momentum indicator that tracks cumulative buying and selling pressure by relating volume to price movement.
+Based on TradingView's built-in Ichimoku Cloud indicator.
 
-**Core Logic:** Adds volume on up-close days and subtracts volume on down-close days to create a cumulative line. Rising OBV confirms uptrend strength; falling OBV confirms downtrend. Includes optional smoothing with multiple moving average types.
+## On-Balance Volume
 
-**Key Parameters:**
-- Smoothing Method: SMA, EMA, SMMA (RMA), WMA, or VWMA (default: SMA)
-- Smoothing Length: Period for smoothing calculation (default: 5)
+![On-Balance Volume](images/on-balance-volume.png)
 
-![On-Balance Volume](images/On-Balance-Volume.png)
+Adds a bar's volume when it closes up and subtracts it when it closes down, for one running total.
 
-**Typical Use Case:** Confirm trend strength and detect divergences. If price makes new highs but OBV doesn't, it signals weakening momentum (bearish divergence). Use OBV trend direction to validate price trends.
+OBV leading price higher hints that buyers are quietly accumulating. A divergence between the two is the warning sign.
 
----
+| Setting   | Default |
+| --------- | ------- |
+| Smoothing | SMA 5   |
 
-### Parabolic SAR
+Based on TradingView's built-in On Balance Volume indicator.
 
-**Purpose:** Trend-following indicator that provides dynamic stop-loss levels and identifies potential trend reversal points.
+## Parabolic SAR
 
-**Core Logic:** Plots dots above or below price that follow the trend direction. Dots flip to opposite side when trend reverses. Acceleration Factor (AF) increases as trend continues, making SAR more sensitive over time.
+![Parabolic SAR](images/parabolic-sar.png)
 
-**Key Parameters:**
-- AF Start: Initial acceleration factor (default: 0.02)
-- AF Increment: AF increase per period (default: 0.02)
-- AF Max: Maximum acceleration factor (default: 0.20)
+Dots that trail price and close in faster the longer a trend runs.
 
-![Parabolic SAR](images/Parabolic-SAR.png)
+Dots below price mean up, above mean down. When price touches them they flip sides, which makes a ready-made trailing stop.
 
-**Typical Use Case:** Identify trailing stop-loss levels and trend changes. When dots switch from below to above price, consider closing longs. When dots switch from above to below, consider closing shorts or entering longs.
+| Setting  | Default |
+| -------- | ------- |
+| AF start | 0.02    |
+| AF step  | 0.02    |
+| AF max   | 0.20    |
 
----
+## How to use
 
-## How to Use
-
-1. Open TradingView and navigate to the Pine Editor
-2. Copy the Pine Script code from the desired indicator file in the `indicators/` folder
-3. Paste the code into the Pine Editor
-4. Click "Save" and then "Add to Chart"
-5. Customize indicator parameters through the settings menu as needed
-6. Combine multiple indicators for comprehensive analysis and confirmation
+1. Open the indicator's `.pine` file in `indicators/` and copy the code.
+2. In TradingView, open the Pine Editor, paste the code and save it.
+3. Click **Add to chart**, then change the defaults in the indicator's settings.
 
 ## Disclaimer
 
-These indicators are provided for educational and informational purposes only. They should not be construed as financial advice or trading recommendations. Always conduct your own research and consider consulting with a qualified financial advisor before making trading decisions. Past performance does not guarantee future results.
+For learning and research. Indicators describe what price has done, not what it will do. Nothing here is financial advice.
+
+## License
+
+[MIT](LICENSE). Indicators based on someone else's work keep their original author's terms.
