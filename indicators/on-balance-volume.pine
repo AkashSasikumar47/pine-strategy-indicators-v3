@@ -1,0 +1,23 @@
+//@version=6
+indicator("On-Balance Volume", "OBV", overlay = false, format = format.volume, timeframe = "", timeframe_gaps = true)
+
+smoothingType = input.string("SMA", "Method", options = ["SMA", "EMA", "SMMA (RMA)", "WMA", "VWMA"], group = "Smoothing")
+smoothingLength = input.int(5, "Length", minval = 1, maxval = 100, group = "Smoothing")
+
+movingAverage(values, length, maType) =>
+    switch maType
+        "SMA" => ta.sma(values, length)
+        "EMA" => ta.ema(values, length)
+        "SMMA (RMA)" => ta.rma(values, length)
+        "WMA" => ta.wma(values, length)
+        "VWMA" => ta.vwma(values, length)
+
+var cumulativeVolume = 0.0
+cumulativeVolume += nz(volume)
+if barstate.islast and cumulativeVolume == 0
+    runtime.error("No volume is provided by the data vendor.")
+
+obv = ta.cum(math.sign(ta.change(close)) * volume)
+
+plot(obv, "On-Balance Volume", #0091ff)
+plot(movingAverage(obv, smoothingLength, smoothingType), "Smoothing Line", #f37f20, display = display.none)

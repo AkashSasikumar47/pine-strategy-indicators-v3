@@ -1,24 +1,24 @@
-//@version=5
-// Author: Akash Sasikumar
-// Copyright: 2023.Akash sasikumar
+//@version=6
+indicator("Ichimoku Cloud", "ICHI", overlay = true)
 
-indicator(title="Ichimoku Cloud", shorttitle="Ichimoku", overlay=true)
-conversionPeriods = input.int(9, minval=1, title="Conversion Line Length")
-basePeriods = input.int(26, minval=1, title="Base Line Length")
-laggingSpan2Periods = input.int(52, minval=1, title="Leading Span B Length")
-displacement = input.int(26, minval=1, title="Lagging Span")
-donchian(len) => math.avg(ta.lowest(len), ta.highest(len))
-conversionLine = donchian(conversionPeriods)
-baseLine = donchian(basePeriods)
-leadLine1 = math.avg(conversionLine, baseLine)
-leadLine2 = donchian(laggingSpan2Periods)
-plot(conversionLine, color=#2962FF, title="Conversion Line")
-plot(baseLine, color=#B71C1C, title="Base Line")
-plot(close, offset = -displacement + 1, color=#43A047, title="Lagging Span")
-p1 = plot(leadLine1, offset = displacement - 1, color=#A5D6A7,
-	 title="Leading Span A")
-p2 = plot(leadLine2, offset = displacement - 1, color=#EF9A9A,
-	 title="Leading Span B")
-plot(leadLine1 > leadLine2 ? leadLine1 : leadLine2, offset = displacement - 1, title = "Kumo Cloud Upper Line", display = display.none) 
-plot(leadLine1 < leadLine2 ? leadLine1 : leadLine2, offset = displacement - 1, title = "Kumo Cloud Lower Line", display = display.none) 
-fill(p1, p2, color = leadLine1 > leadLine2 ? color.rgb(67, 160, 71, 90) : color.rgb(244, 67, 54, 90))
+conversionLength = input.int(9, "Conversion Line Length", minval = 1)
+baseLength = input.int(26, "Base Line Length", minval = 1)
+spanBLength = input.int(52, "Leading Span B Length", minval = 1)
+displacement = input.int(26, "Lagging Span", minval = 1)
+
+donchian(length) =>
+    math.avg(ta.lowest(length), ta.highest(length))
+
+conversionLine = donchian(conversionLength)
+baseLine = donchian(baseLength)
+spanA = math.avg(conversionLine, baseLine)
+spanB = donchian(spanBLength)
+
+plot(conversionLine, "Conversion Line", #2962FF)
+plot(baseLine, "Base Line", #B71C1C)
+plot(close, "Lagging Span", #43A047, offset = -displacement + 1)
+spanAPlot = plot(spanA, "Leading Span A", #A5D6A7, offset = displacement - 1)
+spanBPlot = plot(spanB, "Leading Span B", #EF9A9A, offset = displacement - 1)
+plot(math.max(spanA, spanB), "Kumo Cloud Upper Line", offset = displacement - 1, display = display.none)
+plot(math.min(spanA, spanB), "Kumo Cloud Lower Line", offset = displacement - 1, display = display.none)
+fill(spanAPlot, spanBPlot, spanA > spanB ? color.rgb(67, 160, 71, 90) : color.rgb(244, 67, 54, 90))
